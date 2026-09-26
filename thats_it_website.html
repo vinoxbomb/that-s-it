@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THAT'S IT.</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f0e8;
+    color: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  .app {
+    width: min(920px, 94vw);
+    padding: 34px 0 50px;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-weight: 800;
+  }
+  .logo {
+    font-size: clamp(24px, 5vw, 42px);
+    letter-spacing: -2px;
+  }
+  .round {
+    background: #171717;
+    color: #fff;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+  }
+  .card {
+    background: #fffdf9;
+    border: 3px solid #171717;
+    border-radius: 28px;
+    box-shadow: 9px 9px 0 #171717;
+    padding: clamp(25px, 6vw, 58px);
+  }
+  .intro {
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(52px, 12vw, 110px);
+    line-height: .82;
+    margin: 0 0 24px;
+    letter-spacing: -6px;
+  }
+  .intro p {
+    font-size: clamp(17px, 3vw, 22px);
+    line-height: 1.45;
+    max-width: 650px;
+    margin: 0 auto 32px;
+  }
+  button {
+    border: 3px solid #171717;
+    background: #171717;
+    color: white;
+    border-radius: 14px;
+    padding: 15px 25px;
+    font-size: 17px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .12s;
+  }
+  button:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 #777; }
+  button:active { transform: translate(1px,1px); box-shadow: none; }
+
+  .daily-meta {
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:22px;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:1.2px;
+    opacity:.55;
+    text-transform:uppercase;
+  }
+  .scenario-label {
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 900;
+    margin-bottom: 17px;
+    opacity: .55;
+  }
+  .scenario {
+    font-size: clamp(30px, 6vw, 57px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    font-weight: 900;
+    margin: 0 0 42px;
+  }
+  .slider-wrap { margin: 0 4px; }
+  input[type=range] {
+    width: 100%;
+    appearance: none;
+    height: 12px;
+    border-radius: 20px;
+    outline: none;
+    background: linear-gradient(to right, #ddd 0%, #171717 0%);
+    border: 2px solid #171717;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #171717;
+    cursor: grab;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #171717;
+    cursor: grab;
+  }
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 15px;
+    font-weight: 950;
+    text-transform: uppercase;
+    font-size: clamp(12px, 2.3vw, 17px);
+  }
+  .labels span:last-child { text-align: right; }
+  .value {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 900;
+    margin: 28px 0 20px;
+    min-height: 34px;
+  }
+  .submit { display:block; margin: 0 auto; }
+  .hidden { display:none !important; }
+
+  .result { text-align:center; }
+  .result h2 {
+    font-size: clamp(43px, 10vw, 82px);
+    line-height:.9;
+    letter-spacing:-4px;
+    margin: 10px 0 20px;
+  }
+  .result-score {
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 26px;
+  }
+  .meter {
+    height: 22px;
+    border: 3px solid #171717;
+    border-radius: 20px;
+    overflow:hidden;
+    margin: 20px 0 32px;
+  }
+  .meter-fill { height:100%; background:#171717; width:0%; transition:width .8s ease; }
+  .result-message {
+    font-size: 19px;
+    line-height:1.5;
+    max-width:650px;
+    margin:0 auto 30px;
+  }
+  .small { opacity:.55; font-size:13px; margin-top:25px; }
+
+  .manager {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid #ddd;
+    text-align: left;
+  }
+  .manager-toggle {
+    background: transparent;
+    color: #171717;
+    border: 2px solid #171717;
+    box-shadow: none;
+    font-size: 14px;
+    padding: 10px 15px;
+  }
+  .manager-toggle:hover { box-shadow: 3px 3px 0 #171717; }
+  .manager-panel { margin-top: 18px; }
+  .manager textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    border: 2px solid #171717;
+    border-radius: 12px;
+    padding: 13px;
+    font: inherit;
+    font-size: 15px;
+    outline: none;
+  }
+  .manager textarea:focus { box-shadow: 3px 3px 0 #171717; }
+  .manager-actions {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-top:10px;
+    flex-wrap:wrap;
+  }
+  .manager-actions button { font-size:14px; padding:10px 15px; }
+  .custom-count { font-size:13px; opacity:.6; font-weight:800; }
+  .custom-list {
+    margin:16px 0 0;
+    padding:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .custom-item {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:#f5f0e8;
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:14px;
+  }
+  .custom-item span { flex:1; }
+  .delete-scenario {
+    background:transparent;
+    color:#171717;
+    border:2px solid #171717;
+    box-shadow:none;
+    padding:5px 9px;
+    font-size:12px;
+  }
+  .delete-scenario:hover { box-shadow:none; transform:none; }
+
+  .flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: #171717;
+    opacity: 0;
+    transition: opacity .1s;
+  }
+  .flash.on { opacity: .08; }
+
+  @media (max-width: 600px) {
+    .card { box-shadow: 6px 6px 0 #171717; }
+    .top { margin-bottom: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="flash" id="flash"></div>
+<main class="app">
+  <div class="top">
+    <div class="logo">THAT'S IT.</div>
+    <div class="round" id="round">TODAY</div>
+  </div>
+
+  <section class="card intro" id="intro">
+    <h1>HOW IT<br>IS IT?</h1>
+    <p>
+      Everyone gets the same 10 scenarios for the day.
+      At midnight Eastern Time, a brand-new set appears. You can also add your own scenarios below. Your job is to decide how much each one makes you think:
+      <strong>“THAT'S IT. THAT'S ENOUGH.”</strong>
+    </p>
+    <button id="start">I'M READY TO JUDGE</button>
+    <div class="manager">
+      <button class="manager-toggle" id="managerToggle">＋ ADD MY OWN SCENARIOS</button>
+      <div class="manager-panel hidden" id="managerPanel">
+        <textarea id="scenarioInput" placeholder="Type a scenario here...&#10;Example: Someone says “one more episode” and then watches four more."></textarea>
+        <div class="manager-actions">
+          <button id="addScenario">ADD SCENARIO</button>
+          <span class="custom-count" id="customCount">0 custom scenarios</span>
+        </div>
+        <ul class="custom-list" id="customList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="game">
+    <div class="daily-meta"><span id="todayLabel"></span><span id="countdown">NEXT SET IN --:--:-- ET</span></div>
+    <div class="scenario-label" id="scenarioNum">SCENARIO 1 / 10</div>
+    <p class="scenario" id="scenario"></p>
+
+    <div class="slider-wrap">
+      <input id="slider" type="range" min="0" max="100" step="1" value="50">
+      <div class="labels">
+        <span>NOT IT</span>
+        <span>THAT'S SUPER IT FOREVER</span>
+      </div>
+    </div>
+
+    <div class="value" id="value">50% IT</div>
+    <button class="submit" id="submit">THAT'S MY VERDICT</button>
+  </section>
+
+  <section class="card result hidden" id="result">
+    <div class="scenario-label">FINAL VERDICT</div>
+    <h2 id="resultTitle"></h2>
+    <div class="result-score" id="resultScore"></div>
+    <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+    <p class="result-message" id="resultMessage"></p>
+    <button id="again">JUDGE AGAIN</button>
+    <div class="small">Come back tomorrow for a new set of 10. Everyone gets the same daily scenarios.<br>Your score is based entirely on your own extremely scientific judgment.</div>
+  </section>
+</main>
+
+<script>
+const builtInScenarios = [
+  "Someone says “I'm on my way” and then sends a picture from their bedroom.",
+  "You put your phone down for two seconds and immediately forget where you put it.",
+  "Someone watches the entire video you sent and replies “lol.”",
+  "You open the fridge, see nothing you want, close it, then open it again like something new spawned.",
+  "Someone takes the last slice of pizza without asking.",
+  "Your headphones are at 1% and the charger is somehow in another room.",
+  "You say “you too” when the waiter tells you to enjoy your meal.",
+  "Someone is standing directly in front of the elevator door before anyone inside can get out.",
+  "You finally get comfortable in bed and realize you forgot to plug your phone in.",
+  "You wave back at someone who was waving at the person behind you.",
+  "Someone sends “we need to talk” and then disappears for six hours.",
+  "Your Wi-Fi stops working specifically when you're winning.",
+  "You ask someone to keep a secret and they immediately say, “Don't worry, I won't tell ANYONE.”",
+  "Someone borrows your charger and somehow returns it with 3% less battery.",
+  "You carefully avoid stepping on a crack and then trip over absolutely nothing.",
+  "Someone says “I have a surprise for you” and the surprise is a task.",
+  "You make the perfect sandwich and drop it immediately.",
+  "You walk into a room and completely forget why you went there.",
+  "Someone changes the group chat name to something terrible and refuses to change it back.",
+  "You check the time, forget it instantly, and have to check again.",
+  "You are already late and the person in front of you is walking exactly half a mile per hour.",
+  "Someone says “this will only take five minutes” before giving you a 45-minute explanation.",
+  "You plug in a USB correctly on the first try and immediately feel like a genius.",
+  "You save a file and then cannot remember what you named it.",
+  "Someone eats the food you specifically said you were saving for later.",
+  "You finally find the perfect song, and someone starts talking over it.",
+  "Your sleeve gets caught on a door handle while you're walking past.",
+  "You type a long message, accidentally delete it, and cannot recreate the exact wording.",
+  "Someone says “I didn't do it” before anyone even asked who did it.",
+  "You hear your name being called, answer, and discover they were talking to someone else.",
+  "You put something somewhere “safe” and have now made it impossible to find.",
+  "Someone takes 14 photos to choose one and then posts the first photo.",
+  "You get to the front of a line and realize you were standing in the wrong line.",
+  "Your favorite snack is discontinued.",
+  "Someone leaves exactly one sip of a drink in the fridge instead of finishing it.",
+  "You are carrying something heavy and someone says, “Need a hand?” after you already reached the destination.",
+  "You finally understand something and then someone explains it again in a completely different way.",
+  "Someone responds to your serious message with a thumbs-up emoji.",
+  "You wake up one minute before your alarm and spend the entire minute waiting for it.",
+  "Your device asks for an update precisely when you need it.",
+  "Someone says “no offense” and then says something that absolutely required no offense.",
+  "You close a tab you needed and have absolutely no idea how to find it again.",
+  "Someone tells you a story you literally just told them yesterday.",
+  "You finish a long assignment and realize you were doing the wrong question.",
+  "You put your favorite hoodie in the wash and suddenly have nothing to wear.",
+  "Someone says “trust me” immediately before doing something extremely untrustworthy.",
+  "You get a notification, open your phone, and it is just an app asking you to rate the app.",
+  "You are one point away from winning and the game suddenly crashes.",
+  "Someone says “I'll remember” and you already know they absolutely will not.",
+  "You hear a noise downstairs at 2 AM and decide you are suddenly extremely brave."
+];
+
+let customScenarios = JSON.parse(localStorage.getItem("thatsItCustomScenarios") || "[]");
+let current = 0;
+let ratings = [];
+let shuffled = [];
+
+const intro = document.getElementById("intro");
+const game = document.getElementById("game");
+const result = document.getElementById("result");
+const scenario = document.getElementById("scenario");
+const scenarioNum = document.getElementById("scenarioNum");
+const slider = document.getElementById("slider");
+const value = document.getElementById("value");
+const round = document.getElementById("round");
+const flash = document.getElementById("flash");
+
+// Wordle-style daily puzzle.
+// The same 10 scenarios are shown to everyone for the same Eastern Time date.
+// Intl.DateTimeFormat handles EST/EDT automatically for New York.
+function easternDateKey() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function seededRandom(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return function() {
+    h += 0x6D2B79F5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function dailyScenarios() {
+  const seed = easternDateKey();
+  const rng = seededRandom(seed);
+  const pool = [...builtInScenarios, ...customScenarios];
+
+  // Deterministically shuffle the scenario pool from the Eastern date.
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, 10);
+}
+
+function updateMidnightCountdown() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false
+  }).formatToParts(now);
+
+  const get = type => Number(parts.find(p => p.type === type).value);
+  const total = get("hour") * 3600 + get("minute") * 60 + get("second");
+  const remaining = 86400 - total;
+  const h = Math.floor(remaining / 3600);
+  const m = Math.floor((remaining % 3600) / 60);
+  const s = remaining % 60;
+  document.getElementById("countdown").textContent =
+    `NEXT SET IN ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")} ET`;
+}
+
+const itMessages = [
+  "Never It",
+  "Sorta It",
+  "Maybe It",
+  "Kinda It",
+  "That's It",
+  "Super It",
+  "Hyper It",
+  "Ultra It",
+  "Omega It",
+  "Super It Forever",
+  "THAT'S SUPER IT FOREVER"
+];
+
+function updateSlider() {
+  const v = Number(slider.value);
+  const tier = Math.min(9, Math.floor(v / 10));
+
+  slider.style.background = `linear-gradient(to right, #171717 ${v}%, #ddd ${v}%)`;
+
+  // 100% gets its own special message.
+  if (v === 100) {
+    value.textContent = "100% — THAT'S SUPER IT FOREVER";
+  } else {
+    value.textContent = `${v}% — ${itMessages[tier]}`;
+  }
+}
+
+function loadScenario() {
+  scenarioNum.textContent = `SCENARIO ${current + 1} / 10`;
+  scenario.textContent = shuffled[current];
+  slider.value = 50;
+  updateSlider();
+  round.textContent = `${current + 1} / 10`;
+}
+
+function saveCustomScenarios() {
+  localStorage.setItem("thatsItCustomScenarios", JSON.stringify(customScenarios));
+}
+
+function renderCustomScenarios() {
+  const list = document.getElementById("customList");
+  const count = document.getElementById("customCount");
+
+  count.textContent = `${customScenarios.length} custom scenario${customScenarios.length === 1 ? "" : "s"}`;
+  list.innerHTML = "";
+
+  customScenarios.forEach((text, index) => {
+    const li = document.createElement("li");
+    li.className = "custom-item";
+
+    const span = document.createElement("span");
+    span.textContent = text;
+
+    const button = document.createElement("button");
+    button.className = "delete-scenario";
+    button.textContent = "DELETE";
+    button.addEventListener("click", () => {
+      customScenarios.splice(index, 1);
+      saveCustomScenarios();
+      renderCustomScenarios();
+    });
+
+    li.appendChild(span);
+    li.appendChild(button);
+    list.appendChild(li);
+  });
+}
+
+document.getElementById("managerToggle").addEventListener("click", () => {
+  const panel = document.getElementById("managerPanel");
+  panel.classList.toggle("hidden");
+  document.getElementById("managerToggle").textContent =
+    panel.classList.contains("hidden") ? "＋ ADD MY OWN SCENARIOS" : "− HIDE SCENARIO MANAGER";
+});
+
+document.getElementById("addScenario").addEventListener("click", () => {
+  const input = document.getElementById("scenarioInput");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  if (!customScenarios.includes(text)) {
+    customScenarios.push(text);
+    saveCustomScenarios();
+    renderCustomScenarios();
+  }
+
+  input.value = "";
+  input.focus();
+});
+
+document.getElementById("scenarioInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    document.getElementById("addScenario").click();
+  }
+});
+
+renderCustomScenarios();
+
+function showGame() {
+  intro.classList.add("hidden");
+  result.classList.add("hidden");
+  game.classList.remove("hidden");
+  current = 0;
+  ratings = [];
+  shuffled = dailyScenarios();
+  loadScenario();
+}
+
+function submitRating() {
+  ratings.push(Number(slider.value));
+  flash.classList.add("on");
+  setTimeout(() => flash.classList.remove("on"), 120);
+
+  if (current < 9) {
+    current++;
+    setTimeout(loadScenario, 130);
+  } else {
+    setTimeout(showResult, 180);
+  }
+}
+
+function showResult() {
+  game.classList.add("hidden");
+  result.classList.remove("hidden");
+  round.textContent = "DONE";
+
+  const avg = Math.round(ratings.reduce((a,b) => a+b, 0) / ratings.length);
+  document.getElementById("resultScore").textContent = `Your average: ${avg}% IT`;
+  document.getElementById("meterFill").style.width = avg + "%";
+
+  let title, message;
+  if (avg < 15) {
+    title = "NOT IT.";
+    message = "You have an almost supernatural ability to tolerate nonsense. Things have to get REALLY bad before you reach the breaking point.";
+  } else if (avg < 30) {
+    title = "BARELY IT.";
+    message = "You have standards, but you're willing to let a surprising amount of nonsense slide.";
+  } else if (avg < 50) {
+    title = "KIND OF IT.";
+    message = "You are beginning to understand the phrase. The “that's enough” button is warming up.";
+  } else if (avg < 70) {
+    title = "THAT'S IT.";
+    message = "You have officially reached the point where the nonsense is becoming unacceptable.";
+  } else if (avg < 88) {
+    title = "VERY IT.";
+    message = "You don't just say “that's it.” You say it with your whole chest.";
+  } else {
+    title = "THAT'S SUPER IT FOREVER.";
+    message = "There is no more IT. You have reached the theoretical maximum amount of IT. It is, in fact, super IT forever.";
+  }
+
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultMessage").textContent = message;
+}
+
+document.getElementById("start").addEventListener("click", showGame);
+document.getElementById("submit").addEventListener("click", submitRating);
+document.getElementById("again").addEventListener("click", showGame);
+slider.addEventListener("input", updateSlider);
+updateSlider();
+document.getElementById("todayLabel").textContent =
+  "DAILY IT — " + new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date());
+updateMidnightCountdown();
+setInterval(updateMidnightCountdown, 1000);
+
+// If the user leaves the page open across midnight ET, reload for the new puzzle.
+let currentDailyKey = easternDateKey();
+setInterval(() => {
+  const newKey = easternDateKey();
+  if (newKey !== currentDailyKey) location.reload();
+}, 1000);
+
+</script>
+</body>
+</html>
